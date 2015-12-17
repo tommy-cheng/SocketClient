@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QTcpSocket>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 class QUdpSocket;
@@ -42,12 +43,21 @@ private slots:
 
     void on_leInput_textChanged(const QString &arg1);
 
+    void on_cbEnableTimer_clicked();
+
+    void on_pbTimerTest_clicked();
+
+    void MyTimerSlot();
+
 private:
     Ui::SocketClient *ui;
     QUdpSocket *udpSocket;
     QTcpSocket *tcpSocket;
+    QTimer *timer;
+    bool bStartTimer;
 
     void SetPBConnect();
+    void SendTimerData();
 };
 
 #endif // SOCKETCLIENT_H
