@@ -55,6 +55,7 @@ private:
     QTcpSocket *tcpSocket;
     QTimer *timer;
     bool bStartTimer;
+    bool bTCPConnected;
 
     void SetPBConnect();
     void SendTimerData();

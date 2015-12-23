@@ -11,7 +11,7 @@ SocketClient::SocketClient(QWidget *parent) :
     ui->setupUi(this);
     udpSocket = new QUdpSocket(this);
     tcpSocket = new QTcpSocket(this);
-    bStartTimer = false;
+    bStartTimer = bTCPConnected = false;
     timer = new QTimer(this);
     connect(tcpSocket, SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displayError(QAbstractSocket::SocketError)));
@@ -39,6 +39,9 @@ void SocketClient::on_rbTCP_clicked(bool checked)
 void SocketClient::socketConnected()
 {
     ui->leStatus->setText(tr("socket connected"));
+    ui->pbConnect->setText("Disconnect");
+    ui->pbConnect->setEnabled(true);
+    bTCPConnected = true;
 }
 
 void SocketClient::on_rbUDP_clicked(bool checked)
@@ -53,17 +56,29 @@ void SocketClient::on_pbExit_clicked()
 
 void SocketClient::on_pbConnect_clicked()
 {
-    tcpSocket->connectToHost(ui->leIPAddr->text(), ui->lePortNo->text().toInt());
+    if (bTCPConnected) {
+        tcpSocket->disconnectFromHost();
+        ui->pbConnect->setText("Connect");
+        bTCPConnected = false;
+        ui->leStatus->setText("");
+    }
+    else {
+        tcpSocket->connectToHost(ui->leIPAddr->text(), ui->lePortNo->text().toInt());
+        ui->pbConnect->setText("Connecting");
+        ui->pbConnect->setEnabled(false);
+    }
 }
 
 void SocketClient::on_leIPAddr_textChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1);
     SetPBConnect();
 }
 
 
 void SocketClient::on_lePortNo_textChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1);
     SetPBConnect();
 }
 
@@ -120,6 +135,7 @@ void SocketClient::on_pbSend_clicked()
 
 void SocketClient::on_leInput_textChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1);
     if(ui->leInput->text().isEmpty())
         ui->pbSend->setEnabled(false);
     else
